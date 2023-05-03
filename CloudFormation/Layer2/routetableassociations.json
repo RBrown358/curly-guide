@@ -1,0 +1,31 @@
+{
+	"AWSTemplateFormatVersion":"2010-09-09",
+	"Description":"Amplience Hello App - Layer 2 - Route Table Associations",
+	"Parameters":
+	{
+	},
+	"Resources":
+	{
+		"routeTableAsHelloAppAZ1":
+		{
+			"Type":"AWS::EC2::SubnetRouteTableAssociation",
+			"Properties": 
+			{
+				"RouteTableId":{"Fn::ImportValue":"resRouteTableHelloApp"},
+				"SubnetId":{"Fn::ImportValue":"resSubnetHelloAppAZ1"}
+			}
+		},
+		"routeTableAsHelloAppAZ2":
+		{
+			"Type":"AWS::EC2::SubnetRouteTableAssociation",
+			"Properties": 
+			{
+				"RouteTableId":{"Fn::ImportValue":"resRouteTableHelloApp"},
+				"SubnetId":{"Fn::ImportValue":"resSubnetHelloAppAZ2"}
+			}
+		}
+	},
+	"Outputs":
+	{
+	}
+}

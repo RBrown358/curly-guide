@@ -1,0 +1,25 @@
+{
+	"AWSTemplateFormatVersion":"2010-09-09",
+	"Description":"Amplience Hello App - Layer 1 - SecurityGroups",
+	"Parameters":
+	{
+	},
+	"Resources":
+	{
+		"secgroupHelloApp":
+		{
+			"Type":"AWS::EC2::SecurityGroup",
+			"Properties": 
+			{
+				"GroupDescription":"Security Group for Amplience Hello App",
+				"GroupName":"Sec Group Amplience Hello",
+				"Tags":[{"Key":"Name","Value":"Amplience Security Group Hello App"}],
+				"VpcId":{"Fn::ImportValue":"resVpcHelloApp"}
+			}
+		}
+	},
+	"Outputs":
+	{
+		"outSecgroupHelloApp":{"Value":{"Ref":"secgroupHelloApp"},"Export":{"Name":"resSecgroupHelloApp"}}
+	}
+}

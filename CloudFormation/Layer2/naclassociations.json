@@ -1,0 +1,31 @@
+{
+	"AWSTemplateFormatVersion":"2010-09-09",
+	"Description":"Amplience Hello App - Layer 2 - NACL Associations",
+	"Parameters":
+	{
+	},
+	"Resources":
+	{
+		"naclAsHelloAppAZ1":
+		{
+			"Type":"AWS::EC2::SubnetNetworkAclAssociation",
+			"Properties": 
+			{
+				"NetworkAclId":{"Fn::ImportValue":"resNaclHelloApp"},
+				"SubnetId":{"Fn::ImportValue":"resSubnetHelloAppAZ1"}
+			}
+		},
+		"naclAsHelloAppAZ2":
+		{
+			"Type":"AWS::EC2::SubnetNetworkAclAssociation",
+			"Properties": 
+			{
+				"NetworkAclId":{"Fn::ImportValue":"resNaclHelloApp"},
+				"SubnetId":{"Fn::ImportValue":"resSubnetHelloAppAZ2"}
+			}
+		}
+	},
+	"Outputs":
+	{
+	}
+}

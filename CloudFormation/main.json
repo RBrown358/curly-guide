@@ -1,0 +1,160 @@
+{
+	"AWSTemplateFormatVersion":"2010-09-09",
+	"Description":"Amplience Hello App - Master Stack",
+	"Parameters":
+	{
+		"paramS3Bucket":
+		{
+			"Type":"String",
+			"Description":"Bucket name used for cloudformation templates",
+			"MinLength":"9",
+			"MaxLength":"18",
+			"Default":"BucketName"
+		}
+	},
+	"Resources":
+	{
+		"stackVpc":
+		{
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer1/vpcs.json" ] ]},
+				"TimeoutInMinutes":"5"
+			}
+		},
+		"stackSubnets":
+		{
+			"DependsOn":"stackVpc",
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer1/subnets.json" ] ]},
+				"TimeoutInMinutes":"5"
+			}
+		},
+		"stackNacls":
+		{
+			"DependsOn":"stackSubnets",
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer1/nacls.json" ] ]},
+				"TimeoutInMinutes":"5"
+			}
+		},
+		"stackSecurityGroups":
+		{
+			"DependsOn":"stackSubnets",
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer1/securitygroups.json" ] ]},
+				"TimeoutInMinutes":"5"
+			}
+		},
+		"stackRouteTables":
+		{
+			"DependsOn":"stackSubnets",
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer1/routetables.json" ] ]},
+				"TimeoutInMinutes":"5"
+			}
+		},
+		"stackInternetGateways":
+		{
+			"DependsOn":"stackRouteTables",
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer1/internetgateways.json" ] ]},
+				"TimeoutInMinutes":"5"
+			}
+		},
+		"stackNaclAssociations":
+		{
+			"DependsOn":"stackNacls",
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer2/naclassociations.json" ] ]},
+				"TimeoutInMinutes":"5"
+			}
+		},
+		"stackRouteTableAssociations":
+		{
+			"DependsOn":"stackRouteTables",
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer2/routetableassociations.json" ] ]},
+				"TimeoutInMinutes":"5"
+			}
+		},
+		"stackSecurityGroupRules":
+		{
+			"DependsOn":"stackSecurityGroups",
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer2/securitygrouprules.json" ] ]},
+				"TimeoutInMinutes":"5"
+			}
+		},
+		"stackNaclRules":
+		{
+			"DependsOn":"stackNacls",
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer2/naclrules.json" ] ]},
+				"TimeoutInMinutes":"5"
+			}
+		},
+		"stackRoutes":
+		{
+			"DependsOn":"stackInternetGateways",
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer2/routes.json" ] ]},
+				"TimeoutInMinutes":"5"
+			}
+		},
+		"stackKeys":
+		{
+			"DependsOn":"stackRoutes",
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer2/keys.json" ] ]},
+				"TimeoutInMinutes":"5"
+			}
+		},
+		"stackElasticIps":
+		{
+			"DependsOn":"stackSubnets",
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer2/elasticips.json" ] ]},
+				"TimeoutInMinutes":"5"
+			}
+		},
+		"stackEcs":
+		{
+			"DependsOn":"stackKeys",
+			"Type":"AWS::CloudFormation::Stack",
+			"Properties":
+			{
+				"TemplateURL":{"Fn::Join" : [ "", [ "https://", {"Ref":"paramS3Bucket"}, ".s3.amazonaws.com/Layer3/ecs.json" ] ]},
+				"TimeoutInMinutes":"20"
+			}
+		}
+	},
+	"Outputs":
+	{
+	}
+}

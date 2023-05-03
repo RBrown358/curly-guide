@@ -1,0 +1,31 @@
+{
+	"AWSTemplateFormatVersion":"2010-09-09",
+	"Description":"Amplience Hello App - Layer 1 - Internet Gateways",
+	"Parameters":
+	{
+	},
+	"Resources":
+	{
+		"internetgatewayHelloApp":
+		{
+			"Type":"AWS::EC2::InternetGateway",
+			"Properties": 
+			{
+				"Tags":[{"Key":"Name","Value":"Amplience Internet Gateway Hello App"}]
+			}
+		},
+		"internetgatewayAttachHelloApp":
+		{
+			"Type":"AWS::EC2::VPCGatewayAttachment",
+			"Properties": 
+			{
+				"InternetGatewayId":{"Ref":"internetgatewayHelloApp"},
+				"VpcId":{"Fn::ImportValue":"resVpcHelloApp"}
+			}
+		}
+	},
+	"Outputs":
+	{
+		"outInternetgatewayHelloApp":{"Value":{"Ref":"internetgatewayHelloApp"},"Export":{"Name":"resInternetgatewayHelloApp"}}
+	}
+}

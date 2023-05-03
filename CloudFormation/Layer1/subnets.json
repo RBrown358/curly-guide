@@ -1,0 +1,59 @@
+{
+	"AWSTemplateFormatVersion":"2010-09-09",
+	"Description":"Amplience Hello App - Layer 1 - Subnets",
+	"Parameters":
+	{
+		"paramSubnetCidrHelloAZ1":
+		{
+			"Type":"String",
+			"Description":"CIDR Block Range for Hello App AZ1",
+			"MinLength":"9",
+			"MaxLength":"18",
+			"Default":"10.168.0.0/28",
+			"AllowedPattern":"(\\d{1,3}).(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\/(\\d{1,3})",
+			"ConstraintDescription":"Must be a valid CIDR range of form x.x.x.x/x"
+		},
+		"paramSubnetCidrHelloAZ2":
+		{
+			"Type":"String",
+			"Description":"CIDR Block Range for Hello App AZ2",
+			"MinLength":"9",
+			"MaxLength":"18",
+			"Default":"10.168.1.0/28",
+			"AllowedPattern":"(\\d{1,3}).(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\/(\\d{1,3})",
+			"ConstraintDescription":"Must be a valid CIDR range of form x.x.x.x/x"
+		}
+	},
+	"Resources":
+	{
+		"subnetHelloAppAZ1":
+		{
+			"Type":"AWS::EC2::Subnet",
+			"Properties": 
+			{
+				"AvailabilityZone":"us-east-1a",
+				"CidrBlock":{"Ref":"paramSubnetCidrHelloAZ1"},
+				"MapPublicIpOnLaunch":"false",
+				"Tags":[{"Key":"Name","Value":"Amplience Subnet Hello AZ1"}],
+				"VpcId":{"Fn::ImportValue":"resVpcHelloApp"}
+			}
+		},
+		"subnetHelloAppAZ2":
+		{
+			"Type":"AWS::EC2::Subnet",
+			"Properties": 
+			{
+				"AvailabilityZone":"us-east-1b",
+				"CidrBlock":{"Ref":"paramSubnetCidrHelloAZ2"},
+				"MapPublicIpOnLaunch":"false",
+				"Tags":[{"Key":"Name","Value":"Amplience Subnet Hello AZ2"}],
+				"VpcId":{"Fn::ImportValue":"resVpcHelloApp"}
+			}
+		}
+	},
+	"Outputs":
+	{
+		"outSubnetHelloAppAZ1":{"Value":{"Ref":"subnetHelloAppAZ1"},"Export":{"Name":"resSubnetHelloAppAZ1"}},
+		"outSubnetHelloAppAZ2":{"Value":{"Ref":"subnetHelloAppAZ2"},"Export":{"Name":"resSubnetHelloAppAZ2"}}
+	}
+}

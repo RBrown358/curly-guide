@@ -1,0 +1,24 @@
+{
+	"AWSTemplateFormatVersion":"2010-09-09",
+	"Description":"Amplience Hello App - Layer 2 - Keys",
+	"Parameters":
+	{
+	},
+	"Resources":
+	{
+		"keyPairAmplience":
+		{
+			"Type" : "AWS::EC2::KeyPair",
+			"Properties" : 
+			{
+				"KeyName" : "keyAmplience",
+				"KeyType" : "rsa",
+				"Tags" : [{"Key":"Name","Value":"Amplience Key Pair"}]
+			}
+		}
+	},
+	"Outputs":
+	{
+		"outKeypairHelloApp":{"Value":{"Ref":"keyPairAmplience"},"Export":{"Name":"resKeypairHelloApp"}}
+	}
+}

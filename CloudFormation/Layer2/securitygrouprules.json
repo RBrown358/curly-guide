@@ -1,0 +1,39 @@
+{
+	"AWSTemplateFormatVersion":"2010-09-09",
+	"Description":"Amplience Hello App - Layer 2 - Security Group Rules",
+	"Parameters":
+	{
+	},
+	"Resources":
+	{
+		"securityGroupRuleIngress1":
+		{
+			"Type":"AWS::EC2::SecurityGroupIngress",
+			"Properties":
+			{
+				"CidrIp":"0.0.0.0/0",
+				"Description":"TemporaryAllIn",
+				"FromPort":0,
+				"GroupId":{"Fn::ImportValue":"resSecgroupHelloApp"},
+				"IpProtocol":-1,
+				"ToPort":65535
+			}
+		},
+		"securityGroupRuleEgress1":
+		{
+			"Type":"AWS::EC2::SecurityGroupEgress",
+			"Properties":
+			{
+				"CidrIp":"0.0.0.0/0",
+				"Description":"TemporaryAllOut",
+				"FromPort":0,
+				"GroupId":{"Fn::ImportValue":"resSecgroupHelloApp"},
+				"IpProtocol":-1,
+				"ToPort":65535
+			}
+		}
+	},
+	"Outputs":
+	{
+	}
+}

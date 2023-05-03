@@ -1,0 +1,23 @@
+{
+	"AWSTemplateFormatVersion":"2010-09-09",
+	"Description":"Amplience Hello App - Layer 2 - Elastic IPs",
+	"Parameters":
+	{
+	},
+	"Resources":
+	{
+		"eipAmplienceHello":
+		{
+			"Type" : "AWS::EC2::EIP",
+			"Properties" : 
+			{
+				"Domain":{"Fn::ImportValue":"resVpcHelloApp"},
+				"Tags":[{"Key":"Name","Value":"Amplience Hello EIP"}]
+			}
+		}
+	},
+	"Outputs":
+	{
+		"outEipHelloApp":{"Value":{"Ref":"eipAmplienceHello"},"Export":{"Name":"resEipHelloApp"}}
+	}
+}

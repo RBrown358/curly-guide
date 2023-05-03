@@ -1,0 +1,22 @@
+{
+	"AWSTemplateFormatVersion":"2010-09-09",
+	"Description":"Amplience Hello App - Layer 1 - RouteTables",
+	"Parameters":
+	{
+	},
+	"Resources":
+	{
+		"routeTableHelloApp":
+		{
+			"Type":"AWS::EC2::RouteTable",
+			"Properties":{
+				"Tags":[{"Key":"Name","Value":"Amplience Route Table Hello App"}],
+				"VpcId":{"Fn::ImportValue":"resVpcHelloApp"}
+			}
+		}
+	},
+	"Outputs":
+	{
+		"outRouteTableHelloApp":{"Value":{"Ref":"routeTableHelloApp"},"Export":{"Name":"resRouteTableHelloApp"}}
+	}
+}

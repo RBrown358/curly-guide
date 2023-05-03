@@ -1,0 +1,116 @@
+{
+	"AWSTemplateFormatVersion":"2010-09-09",
+	"Description":"Amplience Hello App - Layer 3 - ECS",
+	"Parameters":
+	{
+	},
+	"Resources":
+	{
+		"ecsClusterAmplienceHello": 
+		{
+            "Type":"AWS::ECS::Cluster",
+			"Properties" : 
+			{
+				"ClusterName":"AmplienceHelloCluster",
+				"Tags":[{"Key":"Name","Value":"Amplience Hello Cluster"}]
+			}
+        },
+		"ecsTaskDefinitionAmplienceHello":
+		{
+			"DependsOn":"ecsClusterAmplienceHello",
+			"Type":"AWS::ECS::TaskDefinition",
+			"Properties":
+			{
+				"ContainerDefinitions":
+				[{
+					"Name":"helloworld",
+					"Image":"public.ecr.aws/m0h3q1c6/ampliencehello:latest",
+					"PortMappings":
+					[{
+						"ContainerPort":8000,
+						"Protocol":"tcp"
+					}]
+				}],
+				"Cpu":256,
+				"Family":"apis",
+				"Memory":512,
+				"NetworkMode": "awsvpc",
+				"RequiresCompatibilities" : ["FARGATE"]
+			}
+		},
+		"ecsLoadBalancerAmplienceHello":
+		{
+			"DependsOn":"ecsTaskDefinitionAmplienceHello",
+			"Type" : "AWS::ElasticLoadBalancingV2::LoadBalancer",
+			"Properties" : 
+			{
+				"Name" : "AppLBalAmplienceHello",
+				"SecurityGroups" : [{"Fn::ImportValue":"resSecgroupHelloApp"}],
+				"Subnets" : [{"Fn::ImportValue":"resSubnetHelloAppAZ1"},{"Fn::ImportValue":"resSubnetHelloAppAZ2"}],
+				"Tags" : [{"Key":"Name","Value":"AppLBalAmplienceHello"}],
+				"Type" : "application"
+			}
+		},
+		"ecsTargetGroupAmplienceHello":
+		{
+			"DependsOn":"ecsLoadBalancerAmplienceHello",
+			"Type":"AWS::ElasticLoadBalancingV2::TargetGroup",
+			"Properties":
+			{
+				"Port":8000,
+				"Protocol":"HTTP",
+				"Matcher":{"HttpCode":"200-299"},
+				"TargetType":"ip",
+				"VpcId":{"Fn::ImportValue":"resVpcHelloApp"}
+			}
+		},
+		"ecsListener":
+		{
+			"DependsOn":"ecsTargetGroupAmplienceHello",
+			"Type" : "AWS::ElasticLoadBalancingV2::Listener",
+			"Properties" : 
+			{
+				"DefaultActions" : 
+				[{
+					"TargetGroupArn":{ "Ref": "ecsTargetGroupAmplienceHello" },
+					"Type": "forward"
+				}],
+				"LoadBalancerArn" : { "Ref": "ecsLoadBalancerAmplienceHello" },
+				"Port" : 8000,
+				"Protocol" : "HTTP"
+			}
+		},
+		"ecsServiceAmplienceHello":
+		{
+			"DependsOn":"ecsTargetGroupAmplienceHello",
+			"Type":"AWS::ECS::Service",
+			"Properties": 
+			{
+				"Cluster" : { "Ref": "ecsClusterAmplienceHello" },
+				"DesiredCount":1,
+				"LaunchType" : "FARGATE",
+				"LoadBalancers" : 
+				[{
+					"ContainerName" : "helloworld",
+					"ContainerPort" : 8000,
+					"TargetGroupArn" : { "Ref": "ecsTargetGroupAmplienceHello" }
+				}],
+				"NetworkConfiguration" : 
+				{
+					"AwsvpcConfiguration": 
+					{
+						"AssignPublicIp" : "ENABLED",
+						"SecurityGroups" : [{"Fn::ImportValue":"resSecgroupHelloApp"}],
+						"Subnets" : [{"Fn::ImportValue":"resSubnetHelloAppAZ1"}]
+					}
+				},
+				"ServiceName" : "AmplienceHello",
+				"Tags":[{"Key":"Name","Value":"Amplience Hello Container Service"}],
+				"TaskDefinition":{ "Ref": "ecsTaskDefinitionAmplienceHello" }
+			}
+		}
+	},
+	"Outputs":
+	{
+	}
+}

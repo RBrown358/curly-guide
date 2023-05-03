@@ -1,0 +1,23 @@
+{
+	"AWSTemplateFormatVersion":"2010-09-09",
+	"Description":"Amplience Hello App - Layer 1 - NACLs",
+	"Parameters":
+	{
+	},
+	"Resources":
+	{
+		"naclHelloApp":
+		{
+			"Type":"AWS::EC2::NetworkAcl",
+			"Properties": 
+			{
+				"VpcId":{"Fn::ImportValue":"resVpcHelloApp"},
+				"Tags":[{"Key":"Name","Value":"Amplience NACL Hello App"}]
+			}
+		}
+	},
+	"Outputs":
+	{
+		"outNaclHelloApp":{"Value":{"Ref":"naclHelloApp"},"Export":{"Name":"resNaclHelloApp"}}
+	}
+}
